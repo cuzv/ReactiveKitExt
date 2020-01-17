@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "ReactiveKit",
+        "repositoryURL": "https://github.com/DeclarativeHub/ReactiveKit",
+        "state": {
+          "branch": null,
+          "revision": "a45f218217175e7c933acc82681ec8ce62ec55a4",
+          "version": "3.15.6"
+        }
+      },
+      {
+        "package": "ResultConvertible",
+        "repositoryURL": "https://github.com/cuzv/ResultConvertible",
+        "state": {
+          "branch": "master",
+          "revision": "fc9361d8100f2eb0ae220cd983a8da67c01f4e56",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
