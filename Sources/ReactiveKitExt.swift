@@ -6,7 +6,7 @@ extension SignalProtocol {
     public func void() -> Signal<Void, Error> {
         replaceElements(with: ())
     }
-    
+
     public func map<Result>(_ keyPath: KeyPath<Element, Result>) -> Signal<Result, Error> {
         map { $0[keyPath: keyPath] }
     }
@@ -14,11 +14,11 @@ extension SignalProtocol {
     public func compactMap<Result>(_ keyPath: KeyPath<Element, Result?>) -> Signal<Result, Error> {
         compactMap { $0[keyPath: keyPath] }
     }
-    
+
     public func `as`<Transformed>(_ transformedType: Transformed.Type) -> Signal<Transformed?, Error> {
         map { $0 as? Transformed }
     }
-    
+
     public func of<Transformed>(_ transformedType: Transformed.Type) -> Signal<Transformed, Error> {
         compactMap { $0 as? Transformed }
     }
@@ -34,9 +34,21 @@ extension SignalProtocol {
     public func ignore(_ predicate: @escaping (Element) -> Bool) -> Signal<Element, Error> {
         filter { !predicate($0) }
     }
-    
+
     public func catchErrorJustComplete() -> Signal<Element, Error> {
         flatMapError { _ in Signal.completed() }
+    }
+
+    public func trackActivity(_ activityIndicator: Observable<Bool>) -> Signal<Element, Error> {
+        handleEvents(receiveSubscription: {
+            activityIndicator.value = true
+        }, receiveOutput: { _ in
+            activityIndicator.value = false
+        }, receiveCompletion: { _ in
+            activityIndicator.value = false
+        }, receiveCancel: {
+            activityIndicator.value = false
+        })
     }
 }
 
