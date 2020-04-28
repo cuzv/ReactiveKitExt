@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "ReactiveKitExt",
     platforms: [
-        .macOS(.v10_11), .iOS(.v8), .tvOS(.v9), .watchOS(.v2)
+        .macOS(.v10_11), .iOS(.v8), .tvOS(.v9)
     ],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
@@ -23,6 +23,10 @@ let package = Package(
             .upToNextMajor(from: "3.15.6")
         ),
         .package(
+            url: "https://github.com/DeclarativeHub/Bond",
+            .upToNextMajor(from: "7.7.1")
+        ),
+        .package(
             url: "https://github.com/cuzv/ResultConvertible",
             .branch("master")
         ),
@@ -32,7 +36,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "ReactiveKitExt",
-            dependencies: ["ReactiveKit", "ResultConvertible"],
+            dependencies: ["ReactiveKit", "Bond", "ResultConvertible"],
             path: "Sources"
         ),
         .testTarget(
