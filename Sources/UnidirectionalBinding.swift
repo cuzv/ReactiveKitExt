@@ -145,7 +145,7 @@ extension ReactiveExtensions where Base: Deallocatable {
     }
 
     public subscript<A, B>(action: @escaping (Base) -> (A, B) -> Void) -> BindingTarget<(A, B)> {
-        .init(object: base) { [weak base = base] (a, b) in
+        .init(object: base) { [weak base = base] a, b in
             if let base = base {
                 action(base)(a, b)
             }
@@ -164,7 +164,7 @@ extension ReactiveExtensions where Base: Deallocatable {
     }
 
     public subscript<A, B, C>(action: @escaping (Base) -> (A, B, C) -> Void) -> BindingTarget<(A, B, C)> {
-        .init(object: base) { [weak base = base] (a, b, c) in
+        .init(object: base) { [weak base = base] a, b, c in
             if let base = base {
                 action(base)(a, b, c)
             }
@@ -182,4 +182,41 @@ extension ReactiveExtensions where Base: Deallocatable {
         self[Optional(action)]
     }
 
+    public subscript<A, B, C, D>(action: @escaping (Base) -> (A, B, C, D) -> Void) -> BindingTarget<(A, B, C, D)> {
+        .init(object: base) { [weak base = base] a, b, c, d in
+            if let base = base {
+                action(base)(a, b, c, d)
+            }
+        }
+    }
+
+    public subscript<A, B, C, D>(action: ((Base, A, B, C, D) -> Void)?) -> BindingTarget<(A, B, C, D)> {
+        makeBindingTarget { base, args in
+            let (a, b, c, d) = args
+            action?(base, a, b, c, d)
+        }
+    }
+
+    public subscript<A, B, C, D>(action: @escaping (Base, A, B, C, D) -> Void) -> BindingTarget<(A, B, C, D)> {
+        self[Optional(action)]
+    }
+
+    public subscript<A, B, C, D, E>(action: @escaping (Base) -> (A, B, C, D, E) -> Void) -> BindingTarget<(A, B, C, D, E)> {
+        .init(object: base) { [weak base = base] a, b, c, d, e in
+            if let base = base {
+                action(base)(a, b, c, d, e)
+            }
+        }
+    }
+
+    public subscript<A, B, C, D, E>(action: ((Base, A, B, C, D, E) -> Void)?) -> BindingTarget<(A, B, C, D, E)> {
+        makeBindingTarget { base, args in
+            let (a, b, c, d, e) = args
+            action?(base, a, b, c, d, e)
+        }
+    }
+
+    public subscript<A, B, C, D, E>(action: @escaping (Base, A, B, C, D, E) -> Void) -> BindingTarget<(A, B, C, D, E)> {
+        self[Optional(action)]
+    }
 }
