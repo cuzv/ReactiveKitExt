@@ -4,6 +4,10 @@ import Bond
 // MARK: - Operators
 
 extension SignalProtocol {
+    public func optional() -> Signal<Element?, Error> {
+        map(Optional.init)
+    }
+
     public func void() -> Signal<Void, Error> {
         replaceElements(with: ())
     }
