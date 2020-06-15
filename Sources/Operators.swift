@@ -47,8 +47,6 @@ extension SignalProtocol {
     public func trackActivity(_ activityIndicator: Observable<Bool>) -> Signal<Element, Error> {
         handleEvents(receiveSubscription: {
             activityIndicator.value = true
-        }, receiveOutput: { _ in
-            activityIndicator.value = false
         }, receiveCompletion: { _ in
             activityIndicator.value = false
         }, receiveCancel: {
