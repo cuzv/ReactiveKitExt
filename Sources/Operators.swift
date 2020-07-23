@@ -12,6 +12,10 @@ extension SignalProtocol {
         replaceElements(with: ())
     }
 
+    public func succeeding<Successor>(_ element: @escaping @autoclosure () -> Successor) -> Signal<Successor, Error> {
+        map { _ in element() }
+    }
+
     public func map<Result>(_ keyPath: KeyPath<Element, Result>) -> Signal<Result, Error> {
         map { $0[keyPath: keyPath] }
     }
@@ -26,6 +30,26 @@ extension SignalProtocol {
 
     public func of<Transformed>(_ transformedType: Transformed.Type) -> Signal<Transformed, Error> {
         compactMap { $0 as? Transformed }
+    }
+
+    public func with<Inserted>(_ element: @escaping @autoclosure () -> Inserted) -> Signal<(Element, Inserted), Error> {
+        map { ($0, element()) }
+    }
+
+    public func with<A, B, Inserted>(_ element: @escaping @autoclosure () -> Inserted) -> Signal<(A, B, Inserted), Error> where Element == (A, B) {
+        map { ($0.0, $0.1, element()) }
+    }
+
+    public func reverse<A, B>() -> Signal<(B, A), Error> where Element == (A, B) {
+        map { ($0.1, $0.0) }
+    }
+
+    public func reverse<A, B, C>() -> Signal<(C, B, A), Error> where Element == (A, B, C) {
+        map { ($0.2, $0.1, $0.0) }
+    }
+
+    public func squeeze<A, B, C>() -> Signal<(A, B, C), Error> where Element == (((A, B), C)) {
+        map { ($0.0, $0.1, $1) }
     }
 
     public func filter(_ keyPath: KeyPath<Element, Bool>) -> Signal<Element, Error> {
@@ -58,20 +82,28 @@ extension SignalProtocol {
 // MARK: - Equatable
 
 extension SignalProtocol where Element: Equatable {
+    public func filter(_ valueToFilter: @escaping @autoclosure () -> Element) -> Signal<Element, Error> {
+        filter { valueToFilter() == $0 }
+    }
+
     public func filter(_ valuesToFilter: Element...) -> Signal<Element, Error> {
         filter { valuesToFilter.contains($0) }
     }
 
-    public func filter<Sequence: Swift.Sequence>(_ valuesToFilter: Sequence) -> Signal<Element, Error> where Sequence.Element == Element {
-        filter { valuesToFilter.contains($0) }
+    public func filter<Sequence: Swift.Sequence>(_ valuesToFilter: @escaping @autoclosure () -> Sequence) -> Signal<Element, Error> where Sequence.Element == Element {
+        filter { valuesToFilter().contains($0) }
+    }
+
+    public func ignore(_ valueToFilter: @escaping @autoclosure () -> Element) -> Signal<Element, Error> {
+        filter { valueToFilter() != $0 }
     }
 
     public func ignore(_ valuesToIgnore: Element...) -> Signal<Element, Error> {
         filter { !valuesToIgnore.contains($0) }
     }
 
-    public func ignore<Sequence: Swift.Sequence>(_ valuesToIgnore: Sequence) -> Signal<Element, Error> where Sequence.Element == Element {
-        filter { !valuesToIgnore.contains($0) }
+    public func ignore<Sequence: Swift.Sequence>(_ valuesToIgnore: @escaping @autoclosure () -> Sequence) -> Signal<Element, Error> where Sequence.Element == Element {
+        filter { !valuesToIgnore().contains($0) }
     }
 }
 
@@ -86,7 +118,7 @@ extension SignalProtocol where Element == String? {
 // MARK: - Bool
 
 extension SignalProtocol where Element == Bool {
-    public func not() -> Signal<Bool, Error> {
+    public func toggle() -> Signal<Bool, Error> {
         map(!)
     }
 }
@@ -119,6 +151,10 @@ extension SignalProtocol where Element: EventConvertible {
 
     public func errors() -> Signal<Element.Error, Error> {
         compactMap(\.event.error)
+    }
+
+    public func terminal() -> Signal<Bool, Error> {
+        map(\.event.isTerminal)
     }
 }
 
