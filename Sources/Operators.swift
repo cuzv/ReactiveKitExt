@@ -56,8 +56,16 @@ extension SignalProtocol {
         filter { $0[keyPath: keyPath] }
     }
 
+    public func filter(_ keyPath: KeyPath<Element, Bool?>) -> Signal<Element, Error> {
+        filter { true == $0[keyPath: keyPath] }
+    }
+
     public func ignore(_ keyPath: KeyPath<Element, Bool>) -> Signal<Element, Error> {
         filter { !$0[keyPath: keyPath] }
+    }
+
+    public func ignore(_ keyPath: KeyPath<Element, Bool?>) -> Signal<Element, Error> {
+        filter { false == $0[keyPath: keyPath] }
     }
 
     public func ignore(_ predicate: @escaping (Element) -> Bool) -> Signal<Element, Error> {
